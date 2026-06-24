@@ -1,0 +1,13 @@
+{:template
+ [:html
+  [:head]
+  [:body
+   #when :data/texts.intro [:header :data/texts.intro]
+   #when-or [[:data/texts.nonexistent :data/texts.elementtext]
+             [:container
+              [:div [:span "This is some text"] [:strong #when :data/texts.elementtext :data/texts.elementtext]]]]
+   #when-and [[:data/texts.available :data/texts.elementtext_two]
+              [:container [:p :data/texts.elementtext_two]]]]]
+ :sub-template
+ [:footer
+  [:div #or [:data/texts.doesntexist :data/texts.footer]]]}

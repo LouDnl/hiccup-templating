@@ -1,0 +1,6 @@
+{:texts
+ {:intro           "Hello from Clojure!"
+  :elementtext     ", this some other text"
+  :available       true
+  :elementtext_two "I am text, therefore i must be read"
+  :footer          "Goodbye now, come again!"}}
