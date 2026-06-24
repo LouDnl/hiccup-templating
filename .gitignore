@@ -1,0 +1,20 @@
+# Ignore all
+*
+
+# Not these directory trees
+!src
+!src/hiccup_templating
+!src/hiccup_templating/core
+!test
+!test/hiccup_templating
+!test/resources
+
+# Not these file types
+!*.clj
+!*.edn
+
+# Not these specific files
+!.gitignore
+!deps.edn
+!README.md
+!LICENSE
