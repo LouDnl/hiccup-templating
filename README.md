@@ -1,3 +1,5 @@
+[![Clojars Project](https://img.shields.io/clojars/v/nl.loudai/hiccup-templating.svg?include_prereleases)](https://clojars.org/nl.loudai/hiccup-templating)
+
 # EDN Hiccup templating
   
 This library provides utility function for filling a [Hiccup](https://github.com/weavejester/hiccup) template stored in [EDN](https://github.com/edn-format/edn) format with data stored in a [Clojure](https://www.clojure.org/) map (datastructure).  

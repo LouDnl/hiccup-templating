@@ -9,8 +9,7 @@
 (comment
   "https://clojure.org/guides/tools_build"
   "https://clojure.github.io/tools.build/clojure.tools.build.api.html"
-  "https://kozieiev.com/blog/packaging-clojure-into-jar-uberjar-with-tools-build/"
-  )
+  "https://kozieiev.com/blog/packaging-clojure-into-jar-uberjar-with-tools-build/")
 
 (set! *warn-on-reflection* true)
 
@@ -29,6 +28,7 @@
 (def jar-content (str build-folder "/" "classes"))  ;; folder where we collect files to pack in a jar
 (def basis (b/create-basis {:project :standard :user :standard}))  ;; basis structure
 (def version (-> (config) :app :version))  ;; library version
+(def pom-license (-> (config) :app :pom/license))
 
 ;; JAR
 (def lib-name (-> (config) :compile :jar :lib))  ;; library name
@@ -40,6 +40,21 @@
 
 
 ;;; Main build functions
+
+(defn write-pom  ; clj -T:build write-pom
+  [_]
+  (println "Cleaning existing POM files")
+  (b/delete {:path "target/classes/META-INF/maven/nl.loudai/hiccup-templating/pom.xml"})
+  (b/delete {:path "./pom.xml"})
+  (println "Writing POM")
+  (b/write-pom {:class-dir jar-content
+                :lib       lib-name
+                :version   version
+                :basis     basis
+                :src-dirs  ["src"]
+                :pom-data  pom-license})
+  (b/copy-file {:src    "target/classes/META-INF/maven/nl.loudai/hiccup-templating/pom.xml"
+                :target "./pom.xml"}))
 
 (defn clean  ; clj -T:build clean
   [_]
@@ -75,12 +90,7 @@
                                "resources"]
                   :ignores    ["^timedate.*"]
                   :target-dir jar-content})
-  (println "Writing POM") ; create pom.xml
-  (b/write-pom   {:class-dir  jar-content
-                  :lib        lib-name
-                  :version    version
-                  :basis      basis
-                  :src-dirs   ["src"]})
+  (write-pom nil) ; create pom.xml
   (println "Creating jar") ; create jar
   (b/jar         {:class-dir  jar-content
                   :jar-file   jar-file-name})
@@ -118,12 +128,7 @@
                   :target (str jar-content "/config.edn")})
   (b/copy-file   {:src    "resources/config-test.edn"
                   :target (str jar-content "/config-test.edn")})
-  (println "Writing POM") ; create pom.xml
-  (b/write-pom   {:class-dir  jar-content
-                  :lib        lib-name
-                  :version    version
-                  :basis      basis
-                  :src-dirs   ["src"]})
+  (write-pom nil) ; create pom.xml
   (println "Compiling Clojure") ; compile clojure code
   (b/compile-clj {:basis      basis
                   :src-dirs   ["src"]

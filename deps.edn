@@ -8,12 +8,16 @@
            :dev    {:jvm-opts    []
                     :extra-paths ["dev/src" "dev/resources"]
                     :extra-deps  {}}
-           :test   {}
+           :test   {:extra-paths ["test"]
+                    :extra-deps  {org.clojure/test.check               {:mvn/version "1.1.1"}
+                                  io.github.cognitect-labs/test-runner {:git/tag "v0.5.1"
+                                                                        :git/sha "dfb30dd"}}}
+           ; Unused, defined from build.clj
            :jar    {:replace-deps {com.github.seancorfield/depstar {:mvn/version "2.0.211"}}
                     :exec-fn      hf.depstar/jar
-                    :exec-args    {:jar      "hiccup-templating.jar"
+                    :exec-args    {:jar      "hiccup-templating-unversioned.jar"
                                    :sync-pom true}}
+           ; clj -X:deploy :artifact '"'`echo target/hiccup-templating-*.jar`'"'
            :deploy {:replace-deps {slipset/deps-deploy {:mvn/version "0.1.5"}}
                     :exec-fn      deps-deploy.deps-deploy/deploy
-                    :exec-args    {:installer :remote
-                                   :artifact  "hiccup-templating.jar"}}}}
+                    :exec-args    {:installer :remote}}}}

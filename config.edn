@@ -1,3 +1,9 @@
-{:app     {:version "0.1.0"}
+{:app     {:name    "Hiccup Templating"
+           :version "0.1.3-SNAPSHOT"
+           :pom/license [[:licenses
+                          [:license
+                           [:name "Eclipse Public License 2.0"]
+                           [:url "https://opensource.org/license/epl-2-0/"]
+                           [:distribution "repo"]]]]}
  :compile {:jar     {:lib nl.loudai/hiccup-templating}
            :uberjar {:entry 'hiccup-templating.core}}}
