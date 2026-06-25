@@ -55,14 +55,14 @@
 
    ## Public API
 
-   `template-from-edn-string` / `template-from-edn-stream`
+   `from-file` / `from-string` / `from-stream`
      Read an EDN template and wrap user-defined tags as `tagged-literal`s.
 
    `template-to-hiccup`
      Walk a template + data map, returning a Hiccup vector tree with
      missing branches pruned.
 
-   `hiccup-xhtml-string` / `hiccup-xhtml-stream`
+   `as-xhtml-string` / `as-xhtml-stream`
      Render a Hiccup tree to XHTML (with `<!DOCTYPE>`) for the
      flying-saucer PDF pipeline."
   (:require
