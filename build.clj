@@ -28,7 +28,9 @@
 (def jar-content (str build-folder "/" "classes"))  ;; folder where we collect files to pack in a jar
 (def basis (b/create-basis {:project :standard :user :standard}))  ;; basis structure
 (def version (-> (config) :app :version))  ;; library version
+(def pom-project (-> (config) :app :pom/project))
 (def pom-license (-> (config) :app :pom/license))
+(def pom-data (into pom-license pom-project))
 
 ;; JAR
 (def lib-name (-> (config) :compile :jar :lib))  ;; library name
@@ -52,7 +54,7 @@
                 :version   version
                 :basis     basis
                 :src-dirs  ["src"]
-                :pom-data  pom-license})
+                :pom-data  pom-data})
   (b/copy-file {:src    "target/classes/META-INF/maven/nl.loudai/hiccup-templating/pom.xml"
                 :target "./pom.xml"}))
 

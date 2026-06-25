@@ -4,6 +4,14 @@
                           [:license
                            [:name "Eclipse Public License 2.0"]
                            [:url "https://opensource.org/license/epl-2-0/"]
-                           [:distribution "repo"]]]]}
+                           [:distribution "repo"]]]]
+           :pom/project [[:url "https://github.com/LouDnl/hiccup-templating"]
+                         [:description "Utility functions for filling a Hiccup template stored in EDN format with data stored in a Clojure map"]
+                         [:developers
+                          [:developer [:name "LouD"]]]
+                         [:scm
+                          [:url "https://github.com/LouDnl/hiccup-templating"]
+                          [:connection "scm:git:https://github.com/LouDnl/hiccup-templating.git"]
+                          [:developerConnection "scm:git:git@github.com:LouDnl/hiccup-templating.git"]]]}
  :compile {:jar     {:lib nl.loudai/hiccup-templating}
            :uberjar {:entry 'hiccup-templating.core}}}

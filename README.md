@@ -2,11 +2,14 @@
 
 # EDN Hiccup templating
   
-This library provides utility function for filling a [Hiccup](https://github.com/weavejester/hiccup) template stored in [EDN](https://github.com/edn-format/edn) format with data stored in a [Clojure](https://www.clojure.org/) map (datastructure).  
+This library provides utility functions for filling a [Hiccup](https://github.com/weavejester/hiccup) template stored in [EDN](https://github.com/edn-format/edn) format with data stored in a [Clojure](https://www.clojure.org/) map (datastructure).  
   
 [Clojure](https://www.clojure.org/) - Clojure is a robust, practical, and fast programming language with a set of useful features that together form a simple, coherent, and powerful tool.  
 [Hiccup](https://github.com/weavejester/hiccup) - Hiccup is a library for representing HTML in Clojure. It uses vectors to represent elements, and maps to represent an element's attributes.  
 [EDN](https://github.com/edn-format/edn) - Extensible Data Notation is a subset of the Clojure language used as a data transfer format, designed to be used in a similar way to JSON or XML.  
+  
+# Docs
+[https://cljdoc.org/versions/nl.loudai/hiccup-templating](https://cljdoc.org/versions/nl.loudai/hiccup-templating)  
   
 # Why
 
