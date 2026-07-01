@@ -14,6 +14,13 @@
 ;; sentinels above. Vector / list nodes turn child sentinels into their
 ;; own sentinel (or simply drop the child for `::missing`).
 
+(def ^:dynamic *max-depth*
+  "When bound to a positive integer, `expand` throws once the recursion
+   depth exceeds this value. `nil` (the default) means no limit."
+  nil)
+
+(def ^:dynamic ^:private *depth* 0)
+
 (declare expand)
 
 ;; Tags that gate a body. EDN tagged-literals only consume ONE form,
@@ -123,7 +130,7 @@
         (if (= (expand test data) MISSING)
           MISSING
           (let [{:keys [result drop]} (collect-children body data)]
-            (case drop
+            (condp = drop
               DROP-ELEMENT MISSING
               DROP-PARENT  DROP-ELEMENT
               (splice result)))))
@@ -153,7 +160,7 @@
         (if-not pass?
           MISSING
           (let [{:keys [result drop]} (collect-children body data)]
-            (case drop
+            (condp = drop
               DROP-ELEMENT MISSING
               DROP-PARENT  DROP-ELEMENT
               (splice result)))))
@@ -173,46 +180,62 @@
   "Walks `node`, resolving `:data/...` lookups and tagged-literal
    directives against `data`. Returns either the expanded structure or
    one of the sentinels declared above. Callers normally hand the
-   result to `template-to-hiccup`, which strips trailing sentinels."
+   result to `template-to-hiccup`, which strips trailing sentinels.
+
+   Honours `*max-depth*`: throws `ex-info` if the walker's recursion
+   depth exceeds the bound value."
   [node data]
-  (cond
-    (= node :remove/element) DROP-ELEMENT
-    (= node :remove/parent)  DROP-PARENT
+  (binding [*depth* (inc *depth*)]
+    (when (and *max-depth* (> *depth* (long *max-depth*)))
+      (throw (ex-info "template exceeds max walker depth"
+                      {:max-depth *max-depth*
+                       :depth     *depth*})))
+    (cond
+      (= node :remove/element) DROP-ELEMENT
+      (= node :remove/parent)  DROP-PARENT
 
-    (and (keyword? node) (= (namespace node) "data"))
-    (lookup-data (data-path (symbol (name node))) data)
+      (and (keyword? node) (= (namespace node) "data"))
+      (lookup-data (data-path (symbol (name node))) data)
 
-    (tagged-literal? node)
-    (expand-tag (:tag node) (:form node) data)
+      (tagged-literal? node)
+      (expand-tag (:tag node) (:form node) data)
 
-    (map? node)
-    (into {}
-          (keep (fn [[k v]]
-                  (let [vv (expand v data)]
-                    (when-not (= vv MISSING) [k vv]))))
-          node)
+      (map? node)
+      (into {}
+            (keep (fn [[k v]]
+                    (let [vv (expand v data)]
+                      (when-not (= vv MISSING) [k vv]))))
+            node)
 
-    (vector? node)
-    (let [{:keys [drop result]} (collect-children node data)]
-      (case drop
-        DROP-ELEMENT MISSING
-        DROP-PARENT  DROP-ELEMENT
-        result))
+      (vector? node)
+      (let [{:keys [drop result]} (collect-children node data)]
+        (condp = drop
+          DROP-ELEMENT MISSING
+          DROP-PARENT  DROP-ELEMENT
+          result))
 
-    (seq? node)
-    (let [{:keys [drop result]} (collect-children node data)]
-      (case drop
-        DROP-ELEMENT MISSING
-        DROP-PARENT  DROP-ELEMENT
-        (seq result)))
+      (seq? node)
+      (let [{:keys [drop result]} (collect-children node data)]
+        (condp = drop
+          DROP-ELEMENT MISSING
+          DROP-PARENT  DROP-ELEMENT
+          (seq result)))
 
-    :else node))
+      :else node)))
 
 (defn template-to-hiccup
   "Top-level entry point. Resolves the `template-key` slot of `template`
-   against `data`. Returns nil when the entire template prunes away."
+   against `data`. Returns nil when the entire template prunes away.
+
+   Options:
+     `:template-key k` - override which template slot to expand.
+                          Defaults to `:template`.
+     `:max-depth n`    - throw `ex-info` when the walker recurses more
+                          than `n` levels deep. Opt-in - nil (default)
+                          means no limit."
   [template data
-   & {:keys [template-key]
+   & {:keys [template-key max-depth]
       :or   {template-key :template}}]
-  (let [out (expand (get template template-key) data)]
-    (if (#{MISSING DROP-ELEMENT DROP-PARENT} out) nil out)))
+  (binding [*max-depth* max-depth]
+    (let [out (expand (get template template-key) data)]
+      (if (#{MISSING DROP-ELEMENT DROP-PARENT} out) nil out))))
