@@ -7,7 +7,8 @@
              [:container
               [:div [:span "This is some text"] [:strong #when :data/texts.elementtext :data/texts.elementtext]]]]
    #when-and [[:data/texts.available :data/texts.elementtext_two]
-              [:container [:p :data/texts.elementtext_two]]]]]
+              [:container [:p :data/texts.elementtext_two]]]
+   #when :data/footer :data/footer]]
  :sub-template
  [:footer
   [:div #or [:data/texts.doesntexist :data/texts.footer]]]}
