@@ -70,7 +70,8 @@
    [hiccup-templating.core.reader]
    [hiccup-templating.core.walker]))
 
-(def ^{:arglists (quote ([path filename])), :doc "Reads an EDN html template as `java.io.File` from provided path + filename"}
+(set! *warn-on-reflection* true)
+
   from-file hiccup-templating.core.reader/template-from-edn-file)
 (def ^{:arglists (quote ([ednstream])), :doc "Reads an EDN html template from provided stream"}
   from-stream hiccup-templating.core.reader/template-from-edn-stream)

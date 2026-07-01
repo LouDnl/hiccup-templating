@@ -5,7 +5,8 @@
    [clojure.string :as string]
    [clojure.walk :as walk])
   (:import
-   [java.io PushbackReader]))
+
+(set! *warn-on-reflection* true)
 
 
 ;;; EDN reading

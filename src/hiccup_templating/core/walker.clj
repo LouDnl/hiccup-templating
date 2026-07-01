@@ -5,6 +5,8 @@
    [hiccup-templating.core.data
     :refer [data-path lookup-data]]))
 
+(set! *warn-on-reflection* true)
+
 
 ;;; Walker
 ;;

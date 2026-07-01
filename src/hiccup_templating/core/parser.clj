@@ -4,7 +4,8 @@
    [hiccup.page :as p]
    [hiccup2.core :as h])
   (:import
-   (java.io ByteArrayOutputStream)))
+
+(set! *warn-on-reflection* true)
 
 
 ;;; HTML / XHTML rendering
