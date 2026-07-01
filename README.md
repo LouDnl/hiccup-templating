@@ -83,16 +83,12 @@ All keys that represent data in the template must look like `:data/key.value` an
                               [:container
                                 [:div [:span \"This is some text\"] [:strong #when :data/texts.elementtext :data/texts.elementtext]]]]
                     #when-and [[:data/texts.available :data/texts.elementtext_two]
-                                [:container [:p :data/texts.elementtext_two]]]]]
-                  :sub-template
-                  [:footer
-                    [:div #or [:data/texts.doesntexist :data/texts.footer]]]}")
+                                [:container [:p :data/texts.elementtext_two]]]]]")
       data     {:texts
                 {:intro           "Hello from Clojure!"
                  :elementtext     ", this some other text"
                  :available       true
-                 :elementtext_two "I am text, therefore i must be read"
-                 :footer          "Goodbye now, come again!"}}
+                 :elementtext_two "I am text, therefore i must be read"}}
       hiccup   (template-to-hiccup template data)]
   (as-xhtml-string hiccup))
 ```
@@ -131,7 +127,18 @@ All keys that represent data in the template must look like `:data/key.value` an
 </html>
 ```
 
-# Examples
+# Examples with hiccup2 html parser
+
+## Running the below code
+```clojure
+(let [t (from-file "test/resources/" "template_a.edn")
+      d (from-file "test/resources/" "data_a.edn")
+      f (template-to-hiccup t d {:template-key :sub-template})
+      h (template-to-hiccup t (assoc d :footer f))]
+  (hiccup2.core/html h))
+```
+
+## Results in
   
 ### Template file contents
 ```clojure
@@ -144,8 +151,9 @@ All keys that represent data in the template must look like `:data/key.value` an
              [:container
               [:div [:span "This is some text"] [:strong #when :data/texts.elementtext :data/texts.elementtext]]]]
    #when-and [[:data/texts.available :data/texts.elementtext_two]
-              [:container [:p :data/texts.elementtext_two]]]]]
-:sub-template
+              [:container [:p :data/texts.elementtext_two]]]
+   #when :data/footer :data/footer]]
+ :sub-template
  [:footer
   [:div #or [:data/texts.doesntexist :data/texts.footer]]]}
 ```
@@ -162,15 +170,18 @@ All keys that represent data in the template must look like `:data/key.value` an
   
 ### Result after processing the template and filling it with the data
 ```clojure
+; template
 [:html
  [:head]
  [:body
   [:header "Hello from Clojure!"]
   [:container [:div [:span "This is some text"] [:strong ", this some other text"]]]
   [:container [:p "I am text, therefore i must be read"]]]]
+; sub-template
+[:footer [:div "Goodbye now, come again!"]]
 ```
   
-### Result html
+### Result html without adding the footer
 Generated with `(hiccup2.core/html input)`  
 ```html
 <html>
@@ -183,6 +194,25 @@ Generated with `(hiccup2.core/html input)`
     <container>
         <p>I am text, therefor i must be read</p>
     </container>
+</body>
+</html>
+```
+
+### Result html with adding the footer
+```html
+<html>
+<head></head>
+<body>
+    <header>Hello from Clojure!</header>
+    <container>
+        <div><span>This is some text</span><strong>, this some other text</strong></div>
+    </container>
+    <container>
+        <p>I am text, therefore i must be read</p>
+    </container>
+    <footer>
+        <div>Goodbye now, come again!</div>
+    </footer>
 </body>
 </html>
 ```
