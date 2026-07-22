@@ -1,6 +1,6 @@
 (ns hiccup-templating.core.parser
   (:require
-   [clojure.string :as str]
+   #?(:cljs [clojure.string :as string])
    #?(:clj [clojure.java.io :as io])
    #?(:clj [hiccup.page :as p])
    #?(:clj [hiccup2.core :as h]))
@@ -58,10 +58,10 @@
 #?(:cljs
    (defn- escape-html [s]
      (-> s
-         (str/replace "&" "&amp;")
-         (str/replace "<" "&lt;")
-         (str/replace ">" "&gt;")
-         (str/replace "\"" "&quot;"))))
+         (string/replace "&" "&amp;")
+         (string/replace "<" "&lt;")
+         (string/replace ">" "&gt;")
+         (string/replace "\"" "&quot;"))))
 
 #?(:cljs
    (defn- attrs->str [attrs]

@@ -3,7 +3,7 @@
    #?(:clj  [clojure.edn :as edn]
       :cljs [cljs.reader :as edn])
    #?(:clj [clojure.java.io :as io])
-   [clojure.string :as string])
+   #?(:clj [clojure.string :as string]))
   #?(:clj
      (:import
       [java.io File FilterReader PushbackReader Reader]
