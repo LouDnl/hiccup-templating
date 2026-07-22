@@ -24,18 +24,23 @@
    (the default) means no limit."
   nil)
 
-(defn- edn-readers
-  []
-  (into {}
-        (map (fn [[k _]] [k #(tagged-literal k %)]))
-        (merge default-data-readers *data-readers*)))
+#?(:clj
+   (defn- edn-readers
+     []
+     (into {}
+           (map (fn [[k _]] [k #(tagged-literal k %)]))
+           (merge default-data-readers *data-readers*))))
 
+#?(:clj
+   (defn- edn-opts
+     []
+     {:eof     nil
+      :readers (edn-readers)
+      :default tagged-literal}))
 
-(defn- edn-opts
-  []
-  {:eof     nil
-   :readers (edn-readers)
-   :default tagged-literal})
+;; In CLJS, cljs.reader has no :default opt — register once at load time so
+;; all unknown tags (e.g. #when, #or, #data/foo) are preserved as tagged-literal.
+#?(:cljs (edn/register-default-tag-parser! tagged-literal))
 
 
 (defn- check-max-depth!
@@ -210,5 +215,7 @@
                         {:max-bytes max-bytes
                          :bytes     n})))))
   (binding [*max-depth* max-depth]
-    (ref-meta-to-tagged-literal (edn/read-string (edn-opts) ednstring))))
+    (ref-meta-to-tagged-literal
+     #?(:clj  (edn/read-string (edn-opts) ednstring)
+        :cljs (edn/read-string ednstring)))))
 
