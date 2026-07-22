@@ -14,6 +14,7 @@
 !*.cljc
 !*.cljs
 !*.edn
+!*.bb
 
 # Not these specific files
 !.gitignore
