@@ -98,18 +98,26 @@
                   :jar-file   jar-file-name})
   (println (format "Jar file created: \"%s\"" jar-file-name)))
 
+(defn test ; clj -T:build test
+  "Run Clojure tests via cognitect test-runner"
+  [_]
+  (println "Running Clojure tests")
+  (b/process {:command-args ["clojure" "-M:test" "-m" "cognitect.test-runner"
+                             "--namespace" "hiccup-templating.unittests"]})
+  (println "Clojure tests complete"))
+
 (defn cljs-compile ; clj -T:build cljs-compile
-  "Compile ClojureScript via shadow-cljs (requires :dev alias)"
+  "Compile ClojureScript via shadow-cljs (requires :cljs alias)"
   [_]
   (println "Compiling ClojureScript (:lib build)")
-  (b/process {:command-args ["clojure" "-A:dev" "-M" "-m" "shadow.cljs.devtools.cli" "compile" "lib"]})
+  (b/process {:command-args ["clojure" "-A:cljs" "-M" "-m" "shadow.cljs.devtools.cli" "compile" "lib"]})
   (println (format "ClojureScript compiled to \"%s/cljs/\"" build-folder)))
 
 (defn cljs-test ; clj -T:build cljs-test
   "Compile and run ClojureScript tests via shadow-cljs + Node.js"
   [_]
   (println "Compiling ClojureScript tests")
-  (b/process {:command-args ["clojure" "-A:dev" "-M" "-m" "shadow.cljs.devtools.cli" "compile" "test"]})
+  (b/process {:command-args ["clojure" "-A:cljs:test" "-M" "-m" "shadow.cljs.devtools.cli" "compile" "test"]})
   (println "Running ClojureScript tests")
   (b/process {:command-args ["node" (format "%s/cljs-test/tests.js" build-folder)]})
   (println "ClojureScript tests complete"))
@@ -131,7 +139,7 @@
   (println "Copying files") ; prepare uberjar content
   (b/copy-dir    {:src-dirs   ["src"]  ;; needed for repl development e.g. clojure.repl/source
                   :target-dir jar-content})
-  ;; 20240119 ~ Updated complete copy of resources folder to specific folders and files only
+  ;; Complete copy of resources folder to specific folders and files only
   (b/copy-dir    {:src-dirs   ["resources/migrations"]
                   :target-dir (str jar-content "/migrations")})
   (b/copy-dir    {:src-dirs   ["resources/migrationsdss"]
