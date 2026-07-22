@@ -16,7 +16,9 @@
    are tagged with a `FIXME` comment and cross-referenced from
    SECURITY.md so the divergence stays visible."
   (:require
-   [clojure.test :refer [deftest is testing]]
+   #?(:clj  [clojure.test :refer [deftest is testing]]
+      :cljs [cljs.test :refer [deftest is testing]])
+
    #?(:clj [clojure.edn :as edn])
    #?(:clj [clojure.java.io :as io])
    #?(:clj  [hiccup-templating.core
