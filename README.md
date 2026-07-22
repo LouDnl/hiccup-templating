@@ -1,8 +1,8 @@
 [![Clojars Project](https://img.shields.io/clojars/v/nl.loudai/hiccup-templating.svg?include_prereleases)](https://clojars.org/nl.loudai/hiccup-templating)
   
 # EDN Hiccup templating
-This library provides utility functions for filling a [Hiccup](https://github.com/weavejester/hiccup) template stored in [EDN](https://github.com/edn-format/edn) format with data stored in a [Clojure](https://www.clojure.org/) map (datastructure).  
-  
+This library provides utility functions for filling a [Hiccup](https://github.com/weavejester/hiccup) template stored in [EDN](https://github.com/edn-format/edn) format with data stored in a Clojure map. Works in both **Clojure (JVM)** and **ClojureScript (browser / Node.js)**.
+
 [Clojure](https://www.clojure.org/) - Clojure is a robust, practical, and fast programming language with a set of useful features that together form a simple, coherent, and powerful tool.  
 [Hiccup](https://github.com/weavejester/hiccup) - Hiccup is a library for representing HTML in Clojure. It uses vectors to represent elements, and maps to represent an element's attributes.  
 [EDN](https://github.com/edn-format/edn) - Extensible Data Notation is a subset of the Clojure language used as a data transfer format, designed to be used in a similar way to JSON or XML.  
@@ -23,8 +23,24 @@ I needed a quick way to use different templates for pdf file generation
 
 # Status
 Still in development.
-  
 
+
+# Platform support
+
+| Function | JVM | CLJS |
+|---|---|---|
+| `from-string` | ✓ | ✓ |
+| `from-file` | ✓ | — no filesystem |
+| `from-stream` | ✓ | — no streams |
+| `template-to-hiccup` | ✓ | ✓ |
+| `as-xhtml-string` | ✓ XHTML strict | ✓ plain HTML5 |
+| `as-xhtml-string-escaped` | ✓ XHTML strict | ✓ plain HTML5 |
+| `as-xhtml-stream` | ✓ | — |
+| `as-xhtml-stream-escaped` | ✓ | — |
+
+In CLJS, `template-to-hiccup` is the primary entry point. Most CLJS frameworks (Reagent, re-frame) consume hiccup vectors directly without needing to render to an HTML string.
+
+  
 # Key / value datamap
 The datamap is where the data for the template comes from. 
 ```clojure
@@ -76,8 +92,12 @@ All keys that represent data in the template must look like `:data/key.value` an
 
 # Getting started
 
-### From code
+## Clojure (JVM)
+
+### From string
 ```clojure
+(require '[hiccup-templating.core :refer [from-string template-to-hiccup as-xhtml-string]])
+
 (let [template (from-string
                 "{:template
                   [:html
@@ -88,7 +108,7 @@ All keys that represent data in the template must look like `:data/key.value` an
                               [:container
                                 [:div [:span \"This is some text\"] [:strong #when :data/texts.elementtext :data/texts.elementtext]]]]
                     #when-and [[:data/texts.available :data/texts.elementtext_two]
-                                [:container [:p :data/texts.elementtext_two]]]]]")
+                                [:container [:p :data/texts.elementtext_two]]]]]}")
       data     {:texts
                 {:intro           "Hello from Clojure!"
                  :elementtext     ", this some other text"
@@ -97,28 +117,25 @@ All keys that represent data in the template must look like `:data/key.value` an
       hiccup   (template-to-hiccup template data)]
   (as-xhtml-string hiccup))
 ```
-  
+
 ### From file
 ```clojure
 (require
  '[clojure.edn :as edn]
- '[hiccup-templating.core
-   :refer [from-file 
-           template-to-hiccup
-           hiccup-xhtml-string)]])
+ '[hiccup-templating.core :refer [from-file template-to-hiccup as-xhtml-string]])
+
 (let [template (from-file "/path/to/" "template.edn")
       data     (edn/read-string (slurp "/path/to/data.edn"))
       hiccup   (template-to-hiccup template data)]
- (as-string hiccup)))
+  (as-xhtml-string hiccup))
 ```
-  
+
 ### Result output
 ```xml
-<?xml version="1.0" encoding="US-ASCII"?>\n
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n<html>
-
+<?xml version="1.0" encoding="US-ASCII"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
 <head></head>
-
 <body>
     <header>Hello from Clojure!</header>
     <container>
@@ -128,12 +145,64 @@ All keys that represent data in the template must look like `:data/key.value` an
         <p>I am text, therefore i must be read</p>
     </container>
 </body>
-
 </html>
 ```
-  
 
-# Examples with hiccup2 html parser
+
+## ClojureScript
+
+### Setup (shadow-cljs + deps.edn)
+```clojure
+;; deps.edn
+{:deps {nl.loudai/hiccup-templating {:mvn/version "..."}
+        org.clojure/clojurescript   {:mvn/version "1.12.145"}}
+ :aliases
+ {:cljs {:extra-deps {thheller/shadow-cljs {:mvn/version "3.4.11"}}}}}
+```
+
+### With Reagent (browser)
+In Reagent, `template-to-hiccup` returns a hiccup vector that Reagent renders directly — no HTML string step needed.
+
+```clojure
+(ns my-app.core
+  (:require [reagent.core :as r]
+            [hiccup-templating.core :refer [from-string template-to-hiccup]]))
+
+(def template
+  (from-string "{:template [:div [:h1 :data/title] #when :data/subtitle [:p :data/subtitle]]}"))
+
+(defn my-component [data]
+  ;; template-to-hiccup returns a hiccup vector — pass directly to Reagent
+  (template-to-hiccup template data))
+
+;; Usage:
+(r/render [my-component {:title "Hello" :subtitle "World"}]
+          (.getElementById js/document "app"))
+```
+
+### As HTML string (Node.js / SSR)
+```clojure
+(ns my-app.render
+  (:require [hiccup-templating.core :refer [from-string template-to-hiccup as-xhtml-string]]))
+
+(def template
+  (from-string "{:template [:html [:body [:h1 :data/title]]]}"))
+
+(defn render [data]
+  (-> (template-to-hiccup template data)
+      (as-xhtml-string)))
+```
+
+> In CLJS, `as-xhtml-string` produces plain HTML5 (no XHTML doctype). If a doctype is required prepend it manually.
+
+### Escaping user input in CLJS
+```clojure
+(as-xhtml-string-escaped hiccup-tree)
+```
+Both `as-xhtml-string-escaped` and `as-xhtml-string` are available cross-platform. Use the `-escaped` variant whenever the data map may contain user input.
+
+
+# Examples with hiccup2 html parser (JVM)
 
 ## Running the below code
 ```clojure
