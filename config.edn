@@ -1,5 +1,5 @@
 {:app     {:name    "Hiccup Templating"
-           :version "0.2.0-SNAPSHOT"
+           :version "0.2.0"
            :pom/license [[:licenses
                           [:license
                            [:name "Eclipse Public License 2.0"]
