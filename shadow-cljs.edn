@@ -1,0 +1,12 @@
+{:source-paths ["src"]
+ :dependencies [[hiccups/hiccups "0.3.0"]]
+ :builds
+ {:lib
+  {:target    :browser
+   :output-dir "target/cljs"
+   :modules   {:main {:entries [hiccup-templating.core]}}}
+  :test
+  {:target    :node-test
+   :output-to "target/cljs-test/tests.js"
+   :ns-regexp "hiccup-templating\\..*-test"}}}
+

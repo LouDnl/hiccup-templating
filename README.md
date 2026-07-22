@@ -1,28 +1,30 @@
 [![Clojars Project](https://img.shields.io/clojars/v/nl.loudai/hiccup-templating.svg?include_prereleases)](https://clojars.org/nl.loudai/hiccup-templating)
-
-# EDN Hiccup templating
   
+# EDN Hiccup templating
 This library provides utility functions for filling a [Hiccup](https://github.com/weavejester/hiccup) template stored in [EDN](https://github.com/edn-format/edn) format with data stored in a [Clojure](https://www.clojure.org/) map (datastructure).  
   
 [Clojure](https://www.clojure.org/) - Clojure is a robust, practical, and fast programming language with a set of useful features that together form a simple, coherent, and powerful tool.  
 [Hiccup](https://github.com/weavejester/hiccup) - Hiccup is a library for representing HTML in Clojure. It uses vectors to represent elements, and maps to represent an element's attributes.  
 [EDN](https://github.com/edn-format/edn) - Extensible Data Notation is a subset of the Clojure language used as a data transfer format, designed to be used in a similar way to JSON or XML.  
   
+
 # Docs
 [https://cljdoc.org/versions/nl.loudai/hiccup-templating](https://cljdoc.org/versions/nl.loudai/hiccup-templating)  
   
-# Why
 
+# Why
 I needed a quick way to use different templates for pdf file generation
   
+
 # Inspiration
+[Aero](https://github.com/juxt/aero) - A small library for explicit, intentful configuration   
+[hiccup-template](https://github.com/yogthos/hiccup-template) - A minimal Clojure/Script library for Hiccup style templating.
   
-This library is inspired by [Aero](https://github.com/juxt/aero) - A small library for explicit, intentful configuration.  
-  
+
 # Status
-  
 Still in development.
   
+
 # Key / value datamap
 The datamap is where the data for the template comes from. 
 ```clojure
@@ -32,6 +34,7 @@ The datamap is where the data for the template comes from.
  :validation {:header true}}
 ```
   
+
 # Tag literals
 `#when <test> <body>` Splice `<body>` if `<test>` resolves, drop otherwise. `<body>` can be a single form or a vector of forms.  
 `#when-not <test> <body>` Inverse of `#when`.  
@@ -43,6 +46,7 @@ Two special fallbacks are recognised:
 - `:remove/parent` drop the parent of that element.
 Any other fallback is spliced as a plain value.  
   
+
 # Tag literal examples
 All keys that represent data in the template must look like `:data/key.value` and can be sub map key/values aswell e.g. `:data/key.anotherkey.value`  
   
@@ -69,6 +73,7 @@ All keys that represent data in the template must look like `:data/key.value` an
   [:span #or [:data/nonexistent "I am the fallback text"]]
 ```
   
+
 # Getting started
 
 ### From code
@@ -126,6 +131,7 @@ All keys that represent data in the template must look like `:data/key.value` an
 
 </html>
 ```
+  
 
 # Examples with hiccup2 html parser
 

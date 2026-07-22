@@ -1,13 +1,15 @@
 {:paths   ["src", "resources"],
- :deps    {org.clojure/clojure {:mvn/version "1.12.5"}, ;; Clojure all by itself (https://github.com/clojure/clojure | https://clojure.org/guides/deps_and_cli)
-           hiccup/hiccup       {:mvn/version "2.0.0"}}   ;; represent HTML in clojure (https://github.com/weavejester/hiccup)
+ :deps    {org.clojure/clojure       {:mvn/version "1.12.5"},  ;; Clojure all by itself (https://github.com/clojure/clojure | https://clojure.org/guides/deps_and_cli)
+           hiccup/hiccup             {:mvn/version "2.0.0"},   ;; represent HTML in clojure (https://github.com/weavejester/hiccup)
+           org.clojure/clojurescript {:mvn/version "1.11.132"},
+           hiccups/hiccups           {:mvn/version "0.3.0"}}
  :aliases {:build  {:extra-deps {org.clojure/tools.deps        {:mvn/version "0.30.1611"}, ;; Functional API for transitive dependency graph expansion and the creation of classpaths (https://github.com/clojure/tools.deps)
                                  io.github.clojure/tools.build {:mvn/version "0.10.13"} ;; Library for building artifacts in Clojure projects (https://github.com/clojure/tools.build)
                                  aero/aero                     {:mvn/version "1.1.6"}}  ;; Small library for explicit, intentful configuration (https://github.com/juxt/aero)
                     :ns-default build}
            :dev    {:jvm-opts    []
                     :extra-paths ["dev/src" "dev/resources"]
-                    :extra-deps  {}}
+                    :extra-deps  {thheller/shadow-cljs {:mvn/version "2.20.21"}}}
            :test   {:extra-paths ["test"]
                     :extra-deps  {org.clojure/test.check               {:mvn/version "1.1.1"}
                                   io.github.cognitect-labs/test-runner {:git/tag "v0.5.1"

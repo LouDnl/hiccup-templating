@@ -5,7 +5,7 @@
    [hiccup-templating.core.data
     :refer [data-path lookup-data]]))
 
-(set! *warn-on-reflection* true)
+#?(:clj (set! *warn-on-reflection* true))
 
 
 ;;; Walker
@@ -186,7 +186,8 @@
    depth exceeds the bound value."
   [node data]
   (binding [*depth* (inc *depth*)]
-    (when (and *max-depth* (> *depth* (long *max-depth*)))
+    (when (and *max-depth* #?(:clj (> *depth* (long *max-depth*))
+                              :cljs (> *depth* *max-depth*)))
       (throw (ex-info "template exceeds max walker depth"
                       {:max-depth *max-depth*
                        :depth     *depth*})))

@@ -96,39 +96,42 @@
    [hiccup-templating.core.reader]
    [hiccup-templating.core.walker]))
 
-(set! *warn-on-reflection* true)
+#?(:clj (set! *warn-on-reflection* true))
 
-(def ^{:arglists (quote ([path filename & {:keys [validatepath max-bytes max-depth]}]))
-       :doc      "Reads an EDN template file at `<path>/<filename>`. Trailing
-   slashes on `path` are tolerated; `filename` must end in `.edn`.
 
-   Options (all opt-in):
-     `:validatepath true` - reject `..` segments in `path` or `filename`
-                            and refuse any file whose canonical path
-                            escapes the canonicalised `path`.
-     `:max-bytes n`       - refuse to read the file if its size exceeds
-                            `n` bytes, and abort mid-read once more
-                            than `n` characters have streamed.
-     `:max-depth n`       - throw `ex-info` if the template's nesting
-                            depth exceeds `n` during the reader
-                            postwalk.
+#?(:clj
+   (def ^{:arglists (quote ([path filename & {:keys [validatepath max-bytes max-depth]}]))
+          :doc      "Reads an EDN template file at `<path>/<filename>`. Trailing
+      slashes on `path` are tolerated; `filename` must end in `.edn`.
+ 
+      Options (all opt-in):
+        `:validatepath true` - reject `..` segments in `path` or `filename`
+                               and refuse any file whose canonical path
+                               escapes the canonicalised `path`.
+        `:max-bytes n`       - refuse to read the file if its size exceeds
+                               `n` bytes, and abort mid-read once more
+                               than `n` characters have streamed.
+        `:max-depth n`       - throw `ex-info` if the template's nesting
+                               depth exceeds `n` during the reader
+                               postwalk.
+ 
+      Throws `ex-info` when the extension check fails, when the file does
+      not exist, when `:validatepath true` catches an escape attempt, or
+      when a size / depth limit is exceeded."}
+     from-file hiccup-templating.core.reader/template-from-edn-file))
 
-   Throws `ex-info` when the extension check fails, when the file does
-   not exist, when `:validatepath true` catches an escape attempt, or
-   when a size / depth limit is exceeded."}
-  from-file hiccup-templating.core.reader/template-from-edn-file)
-
-(def ^{:arglists (quote ([ednstream & {:keys [max-bytes max-depth]}]))
-       :doc      "Reads an EDN template from a `java.io.PushbackReader` (e.g. an
-   uploaded stream). Unknown tagged literals are preserved as
-   `tagged-literal` values so the walker can interpret them later.
-
-   Options (all opt-in):
-     `:max-bytes n` - abort mid-read once more than `n` characters have
-                      streamed through the reader.
-     `:max-depth n` - throw `ex-info` if the template's nesting depth
-                      exceeds `n` during the reader postwalk."}
-  from-stream hiccup-templating.core.reader/template-from-edn-stream)
+#?(:clj
+   (def ^{:arglists (quote ([ednstream & {:keys [max-bytes max-depth]}]))
+          :doc      "Reads an EDN template from a `java.io.PushbackReader` (e.g. an
+      uploaded stream). Unknown tagged literals are preserved as
+      `tagged-literal` values so the walker can interpret them later.
+ 
+      Options (all opt-in):
+        `:max-bytes n` - abort mid-read once more than `n` characters have
+                         streamed through the reader.
+        `:max-depth n` - throw `ex-info` if the template's nesting depth
+                         exceeds `n` during the reader postwalk."}
+     from-stream hiccup-templating.core.reader/template-from-edn-stream))
 
 (def ^{:arglists (quote ([ednstring & {:keys [max-bytes max-depth]}]))
        :doc      "Reads an EDN template from a string (e.g. a slurped file).
@@ -142,13 +145,14 @@
                       exceeds `n` during the reader postwalk."}
   from-string hiccup-templating.core.reader/template-from-edn-string)
 
-(def ^{:arglists (quote ([hiccup-ds]))
-       :doc      "Renders a Hiccup datastructure as XHTML 1.0 strict and returns
-   it as a `java.io.ByteArrayOutputStream`. String values are emitted
-   **unescaped** so pre-built HTML fragments survive - intended for the
-   flying-saucer PDF pipeline with a trusted data map. Use
-   `as-xhtml-stream-escaped` if the data map may contain user input."}
-  as-xhtml-stream hiccup-templating.core.parser/hiccup-xhtml-stream)
+#?(:clj
+   (def ^{:arglists (quote ([hiccup-ds]))
+          :doc      "Renders a Hiccup datastructure as XHTML 1.0 strict and returns
+      it as a `java.io.ByteArrayOutputStream`. String values are emitted
+      **unescaped** so pre-built HTML fragments survive - intended for the
+      flying-saucer PDF pipeline with a trusted data map. Use
+      `as-xhtml-stream-escaped` if the data map may contain user input."}
+     as-xhtml-stream hiccup-templating.core.parser/hiccup-xhtml-stream))
 
 (def ^{:arglists (quote ([hiccup-ds]))
        :doc      "Renders a Hiccup datastructure as XHTML 1.0 strict and returns
@@ -158,12 +162,13 @@
    map may contain user input."}
   as-xhtml-string hiccup-templating.core.parser/hiccup-xhtml-string)
 
-(def ^{:arglists (quote ([hiccup-ds]))
-       :doc      "Renders a Hiccup datastructure as XHTML 1.0 strict and returns
-   it as a `java.io.ByteArrayOutputStream`. Every string value in the
-   tree is HTML-escaped, making this the safe choice when rendering to
-   any HTML sink with a data map that may contain user input."}
-  as-xhtml-stream-escaped #(hiccup-templating.core.parser/hiccup-xhtml-stream % {:escape-strings true}))
+#?(:clj
+   (def ^{:arglists (quote ([hiccup-ds]))
+          :doc      "Renders a Hiccup datastructure as XHTML 1.0 strict and returns
+      it as a `java.io.ByteArrayOutputStream`. Every string value in the
+      tree is HTML-escaped, making this the safe choice when rendering to
+      any HTML sink with a data map that may contain user input."}
+     as-xhtml-stream-escaped #(hiccup-templating.core.parser/hiccup-xhtml-stream % {:escape-strings true})))
 
 (def ^{:arglists (quote ([hiccup-ds]))
        :doc      "Renders a Hiccup datastructure as XHTML 1.0 strict and returns

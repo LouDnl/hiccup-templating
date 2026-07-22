@@ -11,6 +11,8 @@
 
 # Not these file types
 !*.clj
+!*.cljc
+!*.cljs
 !*.edn
 
 # Not these specific files

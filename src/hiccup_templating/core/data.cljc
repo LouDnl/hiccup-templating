@@ -5,7 +5,7 @@
    [hiccup-templating.core.sentinels
     :refer [MISSING]]))
 
-(set! *warn-on-reflection* true)
+#?(:clj (set! *warn-on-reflection* true))
 
 
 ;;; Data lookup
